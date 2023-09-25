@@ -84,6 +84,17 @@ void TrafficLight::setCurrentPhase(TrafficLightPhase phase)
     _currentPhase = phase;
 }
 
+int randomInRange(const int min, const int max)
+{
+    // Create a random number generator engine
+    std::random_device rd;  // Seed the random number generator
+    std::mt19937 gen(rd()); // Mersenne Twister engine
+    std::uniform_int_distribution<int> distribution(min, max); // Uniform distribution between a and b
+
+    // Generate a random number within the specified range
+    return distribution(gen);
+}
+
 // virtual function which is executed in a thread
 void TrafficLight::cycleThroughPhases()
 {
@@ -91,8 +102,10 @@ void TrafficLight::cycleThroughPhases()
     // and toggles the current phase of the traffic light between red and green and sends an update method 
     // to the message queue using move semantics. The cycle duration should be a random value between 4 and 6 seconds. 
     // Also, the while-loop should use std::this_thread::sleep_for to wait 1ms between two cycles. 
-    
-    double cycleDuration = ((double)(std::rand() % 2000 + 4000));
+    int min = 4000;
+    int max = 6000;
+    double cycleDuration = randomInRange(  min,   max);
+
     std::chrono::time_point<std::chrono::system_clock> lastTLUpdate;
     lastTLUpdate = std::chrono::system_clock::now();
     //_trafficLightID = 99;
@@ -112,9 +125,9 @@ void TrafficLight::cycleThroughPhases()
                 setCurrentPhase(TrafficLightPhase::green); 
             }
             //send update
-            //_messageQueue.Send(std::move(this->getCurrentPhase()));
+            _messageQueue.Send(std::move(this->getCurrentPhase()));
             lastTLUpdate = std::chrono::system_clock::now();
-            cycleDuration = ((double)(std::rand() % 2000 + 4000)) ;
+            cycleDuration = cycleDuration = randomInRange(min, max);
         }
 
     }
